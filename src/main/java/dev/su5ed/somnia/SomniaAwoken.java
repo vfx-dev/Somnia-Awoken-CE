@@ -33,8 +33,11 @@ public class SomniaAwoken {
         SomniaObjects.register(bus);
 
         ModLoadingContext context = ModLoadingContext.get();
-        context.registerConfig(ModConfig.Type.COMMON, SomniaConfig.COMMON_SPEC);
-        context.registerConfig(ModConfig.Type.CLIENT, SomniaConfig.CLIENT_SPEC);
+
+        var container = context.getActiveContainer();
+
+        container.registerConfig(ModConfig.Type.COMMON, SomniaConfig.COMMON_SPEC);
+        container.registerConfig(ModConfig.Type.CLIENT, SomniaConfig.CLIENT_SPEC);
     }
 
     private void setup(final FMLCommonSetupEvent event) {
@@ -42,7 +45,5 @@ public class SomniaAwoken {
         Compat.comfortsLoaded = modList.isLoaded(Compat.COMFORTS_MODID);
         Compat.curiosLoaded = modList.isLoaded(Compat.CURIOS_MODID);
         Compat.darkUtilsLoaded = modList.isLoaded(Compat.DARK_UTILS_MODID);
-
-        event.enqueueWork(SomniaObjects::registerBrewingRecipes);
     }
 }

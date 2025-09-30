@@ -208,7 +208,7 @@ public final class SomniaConfig {
         }
 
         private static Item getModItem(String registryName) {
-            return BuiltInRegistries.ITEM.get(new ResourceLocation(registryName));
+            return BuiltInRegistries.ITEM.get(ResourceLocation.parse(registryName));
         }
     }
 }

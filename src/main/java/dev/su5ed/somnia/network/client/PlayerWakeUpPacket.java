@@ -2,26 +2,25 @@ package dev.su5ed.somnia.network.client;
 
 import dev.su5ed.somnia.SomniaAwoken;
 import dev.su5ed.somnia.network.ClientPacketHandler;
-import dev.su5ed.somnia.network.SingletonPacketPayload;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-public final class PlayerWakeUpPacket implements SingletonPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "player_wake_up");
+public final class PlayerWakeUpPacket implements CustomPacketPayload {
+    public static final Type<PlayerWakeUpPacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(SomniaAwoken.MODID, "player_wake_up"));
     public static final PlayerWakeUpPacket INSTANCE = new PlayerWakeUpPacket();
+    public static final StreamCodec<Object, PlayerWakeUpPacket> STREAM_CODEC = StreamCodec.unit(INSTANCE);
     private PlayerWakeUpPacket() {}
 
-
     @Override
-    public @NotNull ResourceLocation id() {
-        return ID;
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public void handle(PlayPayloadContext context) {
-        if (context.flow().isClientbound()) {
-            context.workHandler().execute(ClientPacketHandler::wakeUpPlayer);
-        }
+    public void handle(IPayloadContext context) {
+        ClientPacketHandler.wakeUpPlayer();
     }
 }

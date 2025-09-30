@@ -3,38 +3,33 @@ package dev.su5ed.somnia.network.server;
 import dev.su5ed.somnia.SomniaAwoken;
 import dev.su5ed.somnia.capability.CapabilityFatigue;
 import dev.su5ed.somnia.capability.Fatigue;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import io.netty.buffer.ByteBuf;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 public record WakeTimeUpdatePacket(long wakeTime) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "wake_time_update");
+    public static final Type<WakeTimeUpdatePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(SomniaAwoken.MODID, "wake_time_update"));
+    public static final StreamCodec<ByteBuf, WakeTimeUpdatePacket> STREAM_CODEC = StreamCodec.ofMember(WakeTimeUpdatePacket::write, WakeTimeUpdatePacket::new);
 
-    public WakeTimeUpdatePacket(FriendlyByteBuf buffer) {
+    public WakeTimeUpdatePacket(ByteBuf buffer) {
         this(buffer.readLong());
     }
 
-    @Override
-    public void write(FriendlyByteBuf buffer) {
+    public void write(ByteBuf buffer) {
         buffer.writeLong(wakeTime);
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
-        return ID;
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public void handle(PlayPayloadContext context) {
-        if (!context.flow().isServerbound())
-            return;
-        var playerOpt = context.player();
-        if (playerOpt.isEmpty()) {
-            return;
-        }
-        var player = playerOpt.get();
+    public void handle(IPayloadContext context) {
+        var player = context.player();
 
         Fatigue fatigue = player.getCapability(CapabilityFatigue.INSTANCE);
         if (fatigue != null) {

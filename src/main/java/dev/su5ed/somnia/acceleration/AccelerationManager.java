@@ -3,14 +3,14 @@ package dev.su5ed.somnia.acceleration;
 import dev.su5ed.somnia.SomniaAwoken;
 import net.minecraft.server.level.ServerLevel;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.tick.ServerTickEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@Mod.EventBusSubscriber(modid = SomniaAwoken.MODID)
+@EventBusSubscriber(modid = SomniaAwoken.MODID)
 public final class AccelerationManager {
     public static final List<AccelerationHandler> HANDLERS = new ArrayList<>();
 
@@ -40,9 +40,7 @@ public final class AccelerationManager {
     }
 
     @SubscribeEvent
-    public static void onTickEnd(TickEvent.ServerTickEvent event) {
-        if (event.phase == TickEvent.Phase.END) {
-            HANDLERS.forEach(AccelerationHandler::tickEnd);
-        }
+    public static void onTickEnd(ServerTickEvent.Post event) {
+        HANDLERS.forEach(AccelerationHandler::tickEnd);
     }
 }

@@ -15,7 +15,7 @@ base {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 
     withSourcesJar()
@@ -30,7 +30,7 @@ repositories {
 }
 
 dependencies {
-    compileOnly(group = "top.theillusivec4.curios", name = "curios-neoforge", version = versionCurios)
+    compileOnly("top.theillusivec4.curios:curios-neoforge:$versionCurios")
 }
 
 unimined.minecraft {
@@ -49,13 +49,9 @@ unimined.minecraft {
     defaultRemapJar = true
 }
 
-tasks.jar {
-    enabled = false
-}
-
 tasks.processResources {
     inputs.property("version", project.version)
-    filesMatching("META-INF/mods.toml") {
+    filesMatching("META-INF/neoforge.mods.toml") {
         expand("version" to project.version)
     }
 }

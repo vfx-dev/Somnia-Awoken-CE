@@ -5,11 +5,11 @@ import dev.su5ed.somnia.network.SomniaNetwork;
 import dev.su5ed.somnia.network.client.FatigueUpdatePacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingDeathEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 
-@Mod.EventBusSubscriber(modid = SomniaAwoken.MODID)
+@EventBusSubscriber(modid = SomniaAwoken.MODID)
 public final class CapabilitySync {
 
     @SubscribeEvent

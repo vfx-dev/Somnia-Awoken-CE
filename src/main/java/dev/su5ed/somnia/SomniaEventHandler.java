@@ -21,25 +21,26 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod;
-import net.neoforged.neoforge.event.TickEvent;
+import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.event.entity.living.LivingEntityUseItemEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
+import net.neoforged.neoforge.event.tick.PlayerTickEvent;
 
 import java.util.Optional;
 import java.util.stream.Stream;
 
-@Mod.EventBusSubscriber(modid = SomniaAwoken.MODID)
+@EventBusSubscriber(modid = SomniaAwoken.MODID)
 public final class SomniaEventHandler {
 
     @SubscribeEvent
-    public static void onPlayerTick(TickEvent.PlayerTickEvent event) {
-        if (!SomniaConfig.COMMON.enableFatigue.get() || event.phase != TickEvent.Phase.START || event.player.level().isClientSide
-            || !event.player.isAlive() || event.player.isCreative() || event.player.isSpectator() && !event.player.isSleeping()) return;
+    public static void onPlayerTick(PlayerTickEvent.Pre event) {
+        var player = event.getEntity();
+        if (!SomniaConfig.COMMON.enableFatigue.get() || player.level().isClientSide
+            || !player.isAlive() || player.isCreative() || player.isSpectator() && !player.isSleeping()) return;
 
-        Fatigue props = event.player.getCapability(CapabilityFatigue.INSTANCE);
+        Fatigue props = player.getCapability(CapabilityFatigue.INSTANCE);
         if (props != null) {
-            boolean isSleeping = props.sleepOverride() || event.player.isSleeping();
+            boolean isSleeping = props.sleepOverride() || player.isSleeping();
             double fatigueRate = SomniaConfig.COMMON.fatigueRate.get();
             double fatigueReplenishRate = SomniaConfig.COMMON.fatigueReplenishRate.get();
 
@@ -59,12 +60,12 @@ public final class SomniaEventHandler {
                 else {
                     double adjustedRate = fatigueRate;
 
-                    MobEffectInstance wakefulness = event.player.getEffect(SomniaObjects.AWAKENING_EFFECT.get());
+                    MobEffectInstance wakefulness = player.getEffect(SomniaObjects.AWAKENING_EFFECT);
                     if (wakefulness != null) {
                         adjustedRate -= wakefulness.getAmplifier() == 0 ? adjustedRate / 4 : adjustedRate / 3;
                     }
 
-                    MobEffectInstance insomnia = event.player.getEffect(SomniaObjects.INSOMNIA_EFFECT.get());
+                    MobEffectInstance insomnia = player.getEffect(SomniaObjects.INSOMNIA_EFFECT);
                     if (insomnia != null) {
                         adjustedRate += insomnia.getAmplifier() == 0 ? adjustedRate / 2 : adjustedRate;
                     }
@@ -81,7 +82,7 @@ public final class SomniaEventHandler {
             props.setExtraFatigueRate(extraFatigueRate);
 
             if (props.updateFatigueCounter()) {
-                SomniaNetwork.sendToClient(new FatigueUpdatePacket(fatigue), (ServerPlayer) event.player);
+                SomniaNetwork.sendToClient(new FatigueUpdatePacket(fatigue), (ServerPlayer) player);
 
                 if (SomniaConfig.COMMON.fatigueSideEffects.get()) {
                     int lastSideEffectStage = props.getSideEffectStage();
@@ -94,7 +95,7 @@ public final class SomniaEventHandler {
                         if (fatigue >= stage.minFatigue() && fatigue <= stage.maxFatigue()) {
                             props.setSideEffectStage(stage.minFatigue());
                             if (permanent || lastSideEffectStage < stage.minFatigue()) {
-                                event.player.addEffect(new MobEffectInstance(stage.getEffect(), permanent ? 150 : stage.duration(), stage.amplifier()));
+                                player.addEffect(new MobEffectInstance(stage.getEffect(), permanent ? 150 : stage.duration(), stage.amplifier()));
                             }
                         }
                     }

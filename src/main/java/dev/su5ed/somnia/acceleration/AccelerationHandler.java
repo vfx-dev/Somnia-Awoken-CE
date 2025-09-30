@@ -53,7 +53,7 @@ public class AccelerationHandler {
             wakeUpPlayers();
         }
         else if (state == AccelerationState.SIMULATING || state == AccelerationState.WAITING) {
-            SomniaNetwork.sendToDimension(new SpeedUpdatePacket(state == AccelerationState.SIMULATING ? this.multiplier : 0), this.level.dimension());
+            SomniaNetwork.sendToDimension(new SpeedUpdatePacket(state == AccelerationState.SIMULATING ? this.multiplier : 0), this.level);
         }
 
         return state;
@@ -78,12 +78,12 @@ public class AccelerationHandler {
         Packet<?> packet = new ClientboundSetTimePacket(this.level.getGameTime(), this.level.getDayTime(), this.level.getGameRules().getBoolean(GameRules.RULE_DAYLIGHT));
         server.getPlayerList().broadcastAll(packet, this.level.dimension());
 
-        EventHooks.onPreLevelTick(this.level, server::haveTime);
+        EventHooks.fireLevelTickPre(this.level, server::haveTime);
 
         List.copyOf(this.level.players()).forEach(ServerPlayer::doTick);
         this.level.tick(server::haveTime);
 
-        EventHooks.onPostLevelTick(this.level, server::haveTime);
+        EventHooks.fireLevelTickPost(this.level, server::haveTime);
     }
 
     private void wakeUpPlayers() {

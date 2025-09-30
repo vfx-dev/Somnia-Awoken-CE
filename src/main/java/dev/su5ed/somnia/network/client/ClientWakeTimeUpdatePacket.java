@@ -2,33 +2,31 @@ package dev.su5ed.somnia.network.client;
 
 import dev.su5ed.somnia.SomniaAwoken;
 import dev.su5ed.somnia.network.ClientPacketHandler;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import io.netty.buffer.ByteBuf;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
 import org.jetbrains.annotations.NotNull;
 
 public record ClientWakeTimeUpdatePacket(long wakeTime) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "client_wake_time_update");
-
-    public ClientWakeTimeUpdatePacket(final FriendlyByteBuf buffer) {
+    public static final Type<ClientWakeTimeUpdatePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(SomniaAwoken.MODID, "client_wake_time_update"));
+    public static final StreamCodec<ByteBuf, ClientWakeTimeUpdatePacket> STREAM_CODEC = StreamCodec.ofMember(ClientWakeTimeUpdatePacket::write, ClientWakeTimeUpdatePacket::new);
+    public ClientWakeTimeUpdatePacket(final ByteBuf buffer) {
         this(buffer.readLong());
     }
 
-    @Override
-    public void write(FriendlyByteBuf buffer) {
+    public void write(ByteBuf buffer) {
         buffer.writeLong(wakeTime);
     }
 
     @Override
-    public @NotNull ResourceLocation id() {
-        return ID;
+    public @NotNull Type<ClientWakeTimeUpdatePacket> type() {
+        return TYPE;
     }
 
-    public void handle(PlayPayloadContext context) {
-        if (context.flow().isClientbound()) {
-            context.workHandler().execute(() -> ClientPacketHandler.updateWakeTime(wakeTime));
-        }
+    public void handle(IPayloadContext context) {
+        ClientPacketHandler.updateWakeTime(wakeTime);
     }
 }

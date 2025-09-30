@@ -7,6 +7,8 @@ import dev.su5ed.somnia.util.FatigueDisplayPosition;
 import dev.su5ed.somnia.util.ScreenPosition;
 import dev.su5ed.somnia.util.SideEffectStage;
 import dev.su5ed.somnia.util.SpeedColor;
+
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.Gui;
@@ -21,9 +23,8 @@ import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.ScreenEvent;
-import net.neoforged.neoforge.client.gui.overlay.ExtendedGui;
-import net.neoforged.neoforge.event.TickEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerWakeUpEvent;
 
 import java.text.DecimalFormat;
@@ -48,7 +49,8 @@ public class ClientSleepHandler {
 
     static {
         //Disable Quark's clock display override
-        CLOCK.getOrCreateTag().putBoolean("quark:clock_calculated", true);
+        // TODO FP
+//        CLOCK.getOrCreateTag().putBoolean("quark:clock_calculated", true);
     }
 
     public void addSpeedValue(double speed) {
@@ -57,8 +59,8 @@ public class ClientSleepHandler {
     }
 
     @SubscribeEvent
-    public void clientTick(TickEvent.ClientTickEvent event) {
-        if (event.phase == TickEvent.Phase.END && this.mc.player != null) {
+    public void clientTick(ClientTickEvent.Post event) {
+        if (this.mc.player != null) {
             if (this.mc.player.isSleeping() && SomniaConfig.COMMON.muteSoundWhenSleeping.get() && !this.muted) {
                 this.muted = true;
 
@@ -80,7 +82,7 @@ public class ClientSleepHandler {
     }
 
     @SuppressWarnings("unused")
-    public void renderGuiOverlay(ExtendedGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+    public void renderGuiOverlay(GuiGraphics guiGraphics, DeltaTracker tracker) {
         if (this.mc.screen != null && !(this.mc.screen instanceof PauseScreen) && (this.mc.player == null || !this.mc.player.isSleeping())) return;
 
         Fatigue fatigue = this.mc.player.getCapability(CapabilityFatigue.INSTANCE);

@@ -1,33 +1,33 @@
 package dev.su5ed.somnia.network.client;
 
 import dev.su5ed.somnia.ClientSleepHandler;
-import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceLocation;
 
 import dev.su5ed.somnia.SomniaAwoken;
-import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import io.netty.buffer.ByteBuf;
+import net.neoforged.neoforge.network.handling.IPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
 public record SpeedUpdatePacket(double speed) implements CustomPacketPayload {
-    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "speed_update");
+    public static final Type<SpeedUpdatePacket> TYPE = new Type<>(ResourceLocation.fromNamespaceAndPath(SomniaAwoken.MODID, "speed_update"));
+    public static final StreamCodec<ByteBuf, SpeedUpdatePacket> STREAM_CODEC = StreamCodec.ofMember(SpeedUpdatePacket::write, SpeedUpdatePacket::new);
 
-    public SpeedUpdatePacket(FriendlyByteBuf buffer) {
+    public SpeedUpdatePacket(ByteBuf buffer) {
         this(buffer.readDouble());
     }
 
-    @Override
-    public void write(FriendlyByteBuf buffer) {
+    public void write(ByteBuf buffer) {
         buffer.writeDouble(speed);
     }
 
     @Override
-    public ResourceLocation id() {
-        return ID;
+    public @NotNull Type<? extends CustomPacketPayload> type() {
+        return TYPE;
     }
 
-    public void handle(PlayPayloadContext context) {
-        if (context.flow().isClientbound()) {
-            context.workHandler().execute(() -> ClientSleepHandler.INSTANCE.addSpeedValue(speed));
-        }
+    public void handle(IPayloadContext context) {
+        ClientSleepHandler.INSTANCE.addSpeedValue(speed);
     }
 }

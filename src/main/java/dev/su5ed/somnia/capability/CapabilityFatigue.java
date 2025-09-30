@@ -5,7 +5,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.neoforged.neoforge.capabilities.EntityCapability;
 
 public final class CapabilityFatigue {
-    public static final EntityCapability<Fatigue, Void> INSTANCE = EntityCapability.createVoid(new ResourceLocation(SomniaAwoken.MODID, "fatigue"), Fatigue.class);
+    public static final EntityCapability<Fatigue, Void> INSTANCE = EntityCapability.createVoid(ResourceLocation.fromNamespaceAndPath(SomniaAwoken.MODID, "fatigue"), Fatigue.class);
 
     private CapabilityFatigue() {}
 }
