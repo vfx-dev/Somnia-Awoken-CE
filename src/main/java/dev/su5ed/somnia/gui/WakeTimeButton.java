@@ -24,7 +24,7 @@ public class WakeTimeButton extends Button {
             if (mc.level == null) return;
 
             long targetWakeTime = SomniaUtil.calculateWakeTime(mc.level, wakeTime);
-            SomniaNetwork.INSTANCE.sendToServer(new WakeTimeUpdatePacket(targetWakeTime));
+            SomniaNetwork.sendToServer(new WakeTimeUpdatePacket(targetWakeTime));
             Fatigue fatigue = mc.player.getCapability(CapabilityFatigue.INSTANCE);
             if (fatigue != null) {
                 fatigue.setWakeTime(targetWakeTime);
@@ -34,7 +34,7 @@ public class WakeTimeButton extends Button {
             if (mouseOver instanceof BlockHitResult blockHit) {
                 Vec3 hitVec = mouseOver.getLocation();
                 ActivateBlockPacket packet = new ActivateBlockPacket(blockHit.getBlockPos(), blockHit.getDirection(), (float) hitVec.x, (float) hitVec.y, (float) hitVec.z);
-                SomniaNetwork.INSTANCE.sendToServer(packet);
+                SomniaNetwork.sendToServer(packet);
             }
 
             mc.setScreen(null);

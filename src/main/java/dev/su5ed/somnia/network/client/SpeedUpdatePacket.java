@@ -2,28 +2,32 @@ package dev.su5ed.somnia.network.client;
 
 import dev.su5ed.somnia.ClientSleepHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class SpeedUpdatePacket {
-    private final double speed;
+import dev.su5ed.somnia.SomniaAwoken;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-    public SpeedUpdatePacket(double speed) {
-        this.speed = speed;
+public record SpeedUpdatePacket(double speed) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "speed_update");
+
+    public SpeedUpdatePacket(FriendlyByteBuf buffer) {
+        this(buffer.readDouble());
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeDouble(this.speed);
+    @Override
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeDouble(speed);
     }
 
-    public static SpeedUpdatePacket decode(FriendlyByteBuf buf) {
-        double speed = buf.readDouble();
-        return new SpeedUpdatePacket(speed);
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
-    public void handle(NetworkEvent.Context ctx) {
-        if (FMLLoader.getDist().isClient()) {
-            ClientSleepHandler.INSTANCE.addSpeedValue(this.speed);
+    public void handle(PlayPayloadContext context) {
+        if (context.flow().isClientbound()) {
+            context.workHandler().execute(() -> ClientSleepHandler.INSTANCE.addSpeedValue(speed));
         }
     }
 }

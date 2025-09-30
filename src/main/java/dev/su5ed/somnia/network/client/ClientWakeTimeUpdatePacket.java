@@ -1,29 +1,34 @@
 package dev.su5ed.somnia.network.client;
 
+import dev.su5ed.somnia.SomniaAwoken;
 import dev.su5ed.somnia.network.ClientPacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class ClientWakeTimeUpdatePacket {
-    private final long wakeTime;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
-    public ClientWakeTimeUpdatePacket(long wakeTime) {
-        this.wakeTime = wakeTime;
+public record ClientWakeTimeUpdatePacket(long wakeTime) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "client_wake_time_update");
+
+    public ClientWakeTimeUpdatePacket(final FriendlyByteBuf buffer) {
+        this(buffer.readLong());
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeLong(this.wakeTime);
+    @Override
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeLong(wakeTime);
     }
 
-    public static ClientWakeTimeUpdatePacket decode(FriendlyByteBuf buf) {
-        long wakeTime = buf.readLong();
-        return new ClientWakeTimeUpdatePacket(wakeTime);
+    @Override
+    public @NotNull ResourceLocation id() {
+        return ID;
     }
 
-    public void handle(NetworkEvent.Context ctx) {
-        if (FMLLoader.getDist().isClient()) {
-            ClientPacketHandler.updateWakeTime(this.wakeTime);
+    public void handle(PlayPayloadContext context) {
+        if (context.flow().isClientbound()) {
+            context.workHandler().execute(() -> ClientPacketHandler.updateWakeTime(wakeTime));
         }
     }
 }

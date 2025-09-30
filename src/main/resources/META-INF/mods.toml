@@ -1,16 +1,16 @@
 modLoader="javafml"
 loaderVersion="[1,)"
 license="GNU Lesser General Public License v3.0"
-issueTrackerURL="https://github.com/Su5eD/Somnia-Awoken/issues"
+issueTrackerURL="https://github.com/vfx-dev/Somnia-Awoken-CE/issues"
 
 [[mods]]
 modId="somnia"
-version="${file.jarVersion}"
-displayName="Somnia Awoken"
-displayURL="https://github.com/Su5eD/Somnia-Awoken"
+version="${version}"
+displayName="Somnia Awoken: Community Edition"
+displayURL="https://github.com/vfx-dev/Somnia-Awoken-CE"
 logoFile="logo.png"
-credits="MALfunction84 and Kingrunes, authors of previous versions"
-authors="Su5eD"
+credits="MALfunction84, Kingrunes, Su5eD, authors of previous versions"
+authors="FalsePattern"
 description="Simulating the world while you sleep"
 
 [[dependencies.somnia]]
@@ -22,12 +22,6 @@ description="Simulating the world while you sleep"
 [[dependencies.somnia]]
     modId="minecraft"
     type="required"
-    versionRange="[1.20.4, 1.21)"
-    ordering="NONE"
-    side="BOTH"
-[[dependencies.somnia]]
-    modId="koremods"
-    type="required"
-    versionRange="[0.7,)"
+    versionRange="[1.20.4,1.21)"
     ordering="NONE"
     side="BOTH"

@@ -90,7 +90,7 @@ public class AccelerationHandler {
         this.level.players().stream()
             .filter(LivingEntity::isSleeping)
             .forEach(player -> {
-                SomniaNetwork.sendToClient(new PlayerWakeUpPacket(), player);
+                SomniaNetwork.sendToClient(PlayerWakeUpPacket.INSTANCE, player);
                 String key = "somnia.status." + this.state.name().toLowerCase(Locale.ROOT);
                 player.displayClientMessage(Component.translatable(key), true);
             });

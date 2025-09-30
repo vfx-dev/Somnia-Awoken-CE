@@ -1,29 +1,33 @@
 package dev.su5ed.somnia.network.client;
 
+import dev.su5ed.somnia.SomniaAwoken;
 import dev.su5ed.somnia.network.ClientPacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.fml.loading.FMLLoader;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class FatigueUpdatePacket {
-    private final double fatigue;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
 
-    public FatigueUpdatePacket(double fatigue) {
-        this.fatigue = fatigue;
+public record FatigueUpdatePacket(double fatigue) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "fatigue_update");
+
+    public FatigueUpdatePacket(FriendlyByteBuf buffer) {
+        this(buffer.readDouble());
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeDouble(this.fatigue);
+    @Override
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeDouble(fatigue);
     }
 
-    public static FatigueUpdatePacket decode(FriendlyByteBuf buf) {
-        double fatigue = buf.readDouble();
-        return new FatigueUpdatePacket(fatigue);
+    @Override
+    public ResourceLocation id() {
+        return ID;
     }
 
-    public void handle(NetworkEvent.Context ctx) {
-        if (FMLLoader.getDist().isClient()) {
-            ClientPacketHandler.updateFatigue(this.fatigue);
+    public void handle(PlayPayloadContext context) {
+        if (context.flow().isClientbound()) {
+            context.workHandler().execute(() -> ClientPacketHandler.updateFatigue(fatigue));
         }
     }
 }

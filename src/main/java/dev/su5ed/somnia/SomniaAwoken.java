@@ -28,8 +28,9 @@ public class SomniaAwoken {
             NeoForge.EVENT_BUS.register(ClientSleepHandler.INSTANCE);
         }
 
+        bus.addListener(SomniaNetwork::registerMessages);
+
         SomniaObjects.register(bus);
-        SomniaNetwork.registerMessages();
 
         ModLoadingContext context = ModLoadingContext.get();
         context.registerConfig(ModConfig.Type.COMMON, SomniaConfig.COMMON_SPEC);

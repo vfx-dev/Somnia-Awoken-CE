@@ -1,28 +1,42 @@
 package dev.su5ed.somnia.network.server;
 
+import dev.su5ed.somnia.SomniaAwoken;
 import dev.su5ed.somnia.capability.CapabilityFatigue;
 import dev.su5ed.somnia.capability.Fatigue;
 import net.minecraft.network.FriendlyByteBuf;
-import net.neoforged.neoforge.network.NetworkEvent;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 
-public class ResetSpawnPacket {
-    private final boolean resetSpawn;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
-    public ResetSpawnPacket(boolean resetSpawn) {
-        this.resetSpawn = resetSpawn;
+public record ResetSpawnPacket(boolean resetSpawn) implements CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "reset_spawn");
+
+    public ResetSpawnPacket(FriendlyByteBuf buffer) {
+        this(buffer.readBoolean());
     }
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeBoolean(this.resetSpawn);
+    @Override
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeBoolean(resetSpawn);
     }
 
-    public static ResetSpawnPacket decode(FriendlyByteBuf buf) {
-        boolean resetSpawn = buf.readBoolean();
-        return new ResetSpawnPacket(resetSpawn);
+    @Override
+    public @NotNull ResourceLocation id() {
+        return ID;
     }
 
-    public void handle(NetworkEvent.Context ctx) {
-        Fatigue fatigue = ctx.getSender().getCapability(CapabilityFatigue.INSTANCE);
+    public void handle(PlayPayloadContext context) {
+        if (!context.flow().isServerbound())
+            return;
+        var playerOpt = context.player();
+        if (playerOpt.isEmpty()) {
+            return;
+        }
+        var player = playerOpt.get();
+
+        Fatigue fatigue = player.getCapability(CapabilityFatigue.INSTANCE);
         if (fatigue != null) {
             fatigue.setResetSpawn(this.resetSpawn);
         }

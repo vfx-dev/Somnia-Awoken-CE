@@ -116,7 +116,7 @@ public final class SomniaEventHandler {
                 && ((ServerPlayer) player).bedInRange(pos, state.getValue(HorizontalDirectionalBlock.FACING))
                 && SomniaConfig.COMMON.isWakeTimeSelectionItem(stack)
             ) {
-                SomniaNetwork.sendToClient(new OpenGUIPacket(), (ServerPlayer) player);
+                SomniaNetwork.sendToClient(OpenGUIPacket.INSTANCE, (ServerPlayer) player);
                 event.setCancellationResult(InteractionResult.SUCCESS);
                 event.setCanceled(true);
             }

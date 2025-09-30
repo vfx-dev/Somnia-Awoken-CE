@@ -9,73 +9,45 @@ import dev.su5ed.somnia.network.client.SpeedUpdatePacket;
 import dev.su5ed.somnia.network.server.ActivateBlockPacket;
 import dev.su5ed.somnia.network.server.ResetSpawnPacket;
 import dev.su5ed.somnia.network.server.WakeTimeUpdatePacket;
+
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
-import net.neoforged.neoforge.network.NetworkRegistry;
 import net.neoforged.neoforge.network.PacketDistributor;
-import net.neoforged.neoforge.network.PlayNetworkDirection;
-import net.neoforged.neoforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.event.RegisterPayloadHandlerEvent;
+
+import java.util.function.Consumer;
 
 public final class SomniaNetwork {
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(SomniaAwoken.MODID, "main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
-
-    public static void registerMessages() {
+    public static void registerMessages(final RegisterPayloadHandlerEvent event) {
+        final var registrar = event.registrar(SomniaAwoken.MODID);
         int id = 0;
 
+
         // Client messages
-        INSTANCE.messageBuilder(ClientWakeTimeUpdatePacket.class, id++, PlayNetworkDirection.PLAY_TO_CLIENT)
-            .encoder(ClientWakeTimeUpdatePacket::encode)
-            .decoder(ClientWakeTimeUpdatePacket::decode)
-            .consumerMainThread(ClientWakeTimeUpdatePacket::handle)
-            .add();
-        INSTANCE.messageBuilder(FatigueUpdatePacket.class, id++, PlayNetworkDirection.PLAY_TO_CLIENT)
-            .encoder(FatigueUpdatePacket::encode)
-            .decoder(FatigueUpdatePacket::decode)
-            .consumerMainThread(FatigueUpdatePacket::handle)
-            .add();
-        INSTANCE.messageBuilder(OpenGUIPacket.class, id++, PlayNetworkDirection.PLAY_TO_CLIENT)
-            .encoder((msg, buf) -> {})
-            .decoder(buf -> new OpenGUIPacket())
-            .consumerMainThread(OpenGUIPacket::handle)
-            .add();
-        INSTANCE.messageBuilder(PlayerWakeUpPacket.class, id++, PlayNetworkDirection.PLAY_TO_CLIENT)
-            .encoder((msg, buf) -> {})
-            .decoder(buf -> new PlayerWakeUpPacket())
-            .consumerMainThread(PlayerWakeUpPacket::handle)
-            .add();
-        INSTANCE.messageBuilder(SpeedUpdatePacket.class, id++, PlayNetworkDirection.PLAY_TO_CLIENT)
-            .encoder(SpeedUpdatePacket::encode)
-            .decoder(SpeedUpdatePacket::decode)
-            .consumerMainThread(SpeedUpdatePacket::handle)
-            .add();
+        registrar.play(ClientWakeTimeUpdatePacket.ID, ClientWakeTimeUpdatePacket::new, ClientWakeTimeUpdatePacket::handle);
+        registrar.play(FatigueUpdatePacket.ID, FatigueUpdatePacket::new, FatigueUpdatePacket::handle);
+        registrar.play(OpenGUIPacket.ID, buffer -> OpenGUIPacket.INSTANCE, OpenGUIPacket::handle);
+        registrar.play(PlayerWakeUpPacket.ID, buffer -> PlayerWakeUpPacket.INSTANCE, PlayerWakeUpPacket::handle);
+        registrar.play(SpeedUpdatePacket.ID, SpeedUpdatePacket::new, SpeedUpdatePacket::handle);
 
         // Server messages
-        INSTANCE.messageBuilder(ActivateBlockPacket.class, id++, PlayNetworkDirection.PLAY_TO_SERVER)
-            .encoder(ActivateBlockPacket::encode)
-            .decoder(ActivateBlockPacket::decode)
-            .consumerMainThread(ActivateBlockPacket::handle)
-            .add();
-        INSTANCE.messageBuilder(ResetSpawnPacket.class, id++, PlayNetworkDirection.PLAY_TO_SERVER)
-            .encoder(ResetSpawnPacket::encode)
-            .decoder(ResetSpawnPacket::decode)
-            .consumerMainThread(ResetSpawnPacket::handle)
-            .add();
-        INSTANCE.messageBuilder(WakeTimeUpdatePacket.class, id++, PlayNetworkDirection.PLAY_TO_SERVER)
-            .encoder(WakeTimeUpdatePacket::encode)
-            .decoder(WakeTimeUpdatePacket::decode)
-            .consumerMainThread(WakeTimeUpdatePacket::handle)
-            .add();
+        registrar.play(ActivateBlockPacket.ID, ActivateBlockPacket::read, ActivateBlockPacket::handle);
+        registrar.play(ResetSpawnPacket.ID, ResetSpawnPacket::new, ResetSpawnPacket::handle);
+        registrar.play(WakeTimeUpdatePacket.ID, WakeTimeUpdatePacket::new, WakeTimeUpdatePacket::handle);
     }
 
-    public static void sendToClient(Object packet, ServerPlayer player) {
-        INSTANCE.sendTo(packet, player.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
+    public static void sendToServer(CustomPacketPayload packet) {
+        PacketDistributor.SERVER.noArg().send(packet);
     }
 
-    public static void sendToDimension(Object packet, ResourceKey<Level> dimension) {
-        INSTANCE.send(PacketDistributor.DIMENSION.with(() -> dimension), packet);
+    public static void sendToClient(CustomPacketPayload packet, ServerPlayer player) {
+        PacketDistributor.PLAYER.with(player).send(packet);
+    }
+
+    public static void sendToDimension(CustomPacketPayload packet, ResourceKey<Level> dimension) {
+        PacketDistributor.DIMENSION.with(dimension).send(packet);
     }
 
     private SomniaNetwork() {}

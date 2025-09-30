@@ -4,52 +4,55 @@ import com.google.common.base.MoreObjects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.neoforged.neoforge.network.NetworkEvent;
 
-public class ActivateBlockPacket {
-    private final BlockPos pos;
-    private final Direction side;
-    private final float hitX;
-    private final float hitY;
-    private final float hitZ;
+import dev.su5ed.somnia.SomniaAwoken;
+import net.neoforged.neoforge.network.handling.PlayPayloadContext;
+import org.jetbrains.annotations.NotNull;
 
-    public ActivateBlockPacket(BlockPos pos, Direction side, float hitX, float hitY, float hitZ) {
-        this.pos = pos;
-        this.side = side;
-        this.hitX = hitX;
-        this.hitY = hitY;
-        this.hitZ = hitZ;
-    }
+public record ActivateBlockPacket(BlockPos pos, Direction side, float hitX, float hitY, float hitZ) implements
+        CustomPacketPayload {
+    public static final ResourceLocation ID = new ResourceLocation(SomniaAwoken.MODID, "activate_block");
 
-    public void encode(FriendlyByteBuf buf) {
-        buf.writeBlockPos(this.pos);
-        buf.writeEnum(this.side);
-        buf.writeFloat(this.hitX);
-        buf.writeFloat(this.hitY);
-        buf.writeFloat(this.hitZ);
-    }
-
-    public static ActivateBlockPacket decode(FriendlyByteBuf buf) {
-        BlockPos pos = buf.readBlockPos();
-        Direction side = buf.readEnum(Direction.class);
-        float hitX = buf.readFloat();
-        float hitY = buf.readFloat();
-        float hitZ = buf.readFloat();
+    public static ActivateBlockPacket read(FriendlyByteBuf buffer) {
+        var pos = buffer.readBlockPos();
+        var side = buffer.readEnum(Direction.class);
+        var hitX = buffer.readFloat();
+        var hitY = buffer.readFloat();
+        var hitZ = buffer.readFloat();
         return new ActivateBlockPacket(pos, side, hitX, hitY, hitZ);
     }
 
-    public void handle(NetworkEvent.Context ctx) {
-        ServerPlayer player = ctx.getSender();
-        if (player != null) {
-            BlockState state = player.level().getBlockState(pos);
-            BlockHitResult hitResult = new BlockHitResult(new Vec3(this.hitX, this.hitY, this.hitZ), this.side, pos, false);
+    @Override
+    public void write(FriendlyByteBuf buffer) {
+        buffer.writeBlockPos(this.pos);
+        buffer.writeEnum(this.side);
+        buffer.writeFloat(this.hitX);
+        buffer.writeFloat(this.hitY);
+        buffer.writeFloat(this.hitZ);
+    }
 
-            state.use(player.level(), player, MoreObjects.firstNonNull(player.swingingArm, InteractionHand.MAIN_HAND), hitResult);
+    @Override
+    public @NotNull ResourceLocation id() {
+        return ID;
+    }
+
+    public void handle(PlayPayloadContext context) {
+        if (!context.flow().isServerbound())
+            return;
+        var playerOpt = context.player();
+        if (playerOpt.isEmpty()) {
+            return;
         }
+        var player = playerOpt.get();
+        @SuppressWarnings("resource")
+        var state = player.level().getBlockState(pos);
+        var hitResult = new BlockHitResult(new Vec3(this.hitX, this.hitY, this.hitZ), this.side, pos, false);
+
+        state.use(player.level(), player, MoreObjects.firstNonNull(player.swingingArm, InteractionHand.MAIN_HAND), hitResult);
     }
 }

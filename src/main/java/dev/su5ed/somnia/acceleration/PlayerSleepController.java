@@ -119,7 +119,7 @@ public final class PlayerSleepController {
                 fatigue.setSleepOverride(false);
             }
             entity.stopSleeping();
-            SomniaNetwork.sendToClient(new PlayerWakeUpPacket(), player);
+            SomniaNetwork.sendToClient(PlayerWakeUpPacket.INSTANCE, player);
         }
     }
 
@@ -155,7 +155,7 @@ public final class PlayerSleepController {
         long wakeTime = fatigue.getWakeTime();
         if (wakeTime != -1 && (player.level().getGameTime() >= wakeTime || fatigue.getFatigue() == 0 && SomniaConfig.COMMON.forceWakeUp.get() && !player.isCreative())) {
             player.stopSleepInBed(true, true);
-            SomniaNetwork.sendToClient(new PlayerWakeUpPacket(), player);
+            SomniaNetwork.sendToClient(PlayerWakeUpPacket.INSTANCE, player);
         }
         else if (fatigue.sleepOverride()) {
             fatigue.setSleepOverride(false);

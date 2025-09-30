@@ -26,7 +26,7 @@ public class ResetSpawnButton extends AbstractButton {
         if (mc.player != null) {
             Fatigue fatigue = mc.player.getCapability(CapabilityFatigue.INSTANCE);
             if (fatigue != null) {
-                SomniaNetwork.INSTANCE.sendToServer(new ResetSpawnPacket(this.resetSpawn));
+                SomniaNetwork.sendToServer(new ResetSpawnPacket(this.resetSpawn));
             }
         }
     }
