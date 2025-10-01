@@ -1,48 +1,42 @@
 <div align="center">
     <img src="https://i.imgur.com/KnnOhNi.png" alt="Somnia Logo" width="70%"/>
     <br></br>
-    <a href="https://ci.su5ed.dev/buildConfiguration/SomniaAwoken_BuildBranch">
-        <img src="https://ci.su5ed.dev/app/rest/builds/buildType:id:SomniaAwoken_BuildBranch/statusIcon.svg" alt="Build Status">
+    <a href="https://www.curseforge.com/minecraft/mc-mods/somnia-ce">
+        <img src="https://cf.way2muchnoise.eu/full_1357013_downloads.svg" alt="Download Count">
     </a>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/somnia">
-        <img src="https://cf.way2muchnoise.eu/full_400796_downloads.svg" alt="Download Count">
+    <a href="https://www.curseforge.com/minecraft/mc-mods/somnia-ce">
+        <img src="https://cf.way2muchnoise.eu/versions/1357013.svg" alt="Available MC Versions">
     </a>
-    <a href="https://www.curseforge.com/minecraft/mc-mods/somnia">
-        <img src="https://cf.way2muchnoise.eu/versions/400796.svg" alt="Available MC Versions">
-    </a>
-    <a href="https://modrinth.com/mod/somnia">
-        <img alt="Modrinth download count" src="https://img.shields.io/modrinth/dt/BiSrUr8O?color=00AF5C&label=modrinth&style=flat&logo=modrinth">
+    <a href="https://modrinth.com/mod/somnia-ce">
+        <img alt="Modrinth download count" src="https://img.shields.io/modrinth/dt/DFCs8Mug?color=00AF5C&label=modrinth&style=flat&logo=modrinth">
     </a>
 </div>
 
 ## About
 
-**Somnia Awoken** is a Minecraft mod that simulates the world while you sleep.
-It is a successor of Somnia, which was initally released in 2011.
+**Somnia Awoken: Community Edition** is a Minecraft mod that simulates the world while you sleep.
+It is a successor of Somnia Awoken, which was released in 2020, which was a successor of Somnia, released in 2011.
 
 Instead of skipping the night, the world is accelerated while you sleep.
 You can now sleep at any time as long as you have enough fatigue, which you gain passively over time.
 Don't let it build up too high though - getting too tired comes with debuffs.
 
-Requires [Koremods](https://www.curseforge.com/minecraft/mc-mods/koremods), a Kotlin Script bytecode manipulation
-framework.  
-Downloads are available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/somnia) and
-[Modrinth](https://modrinth.com/mod/somnia).
+Downloads are available on [CurseForge](https://www.curseforge.com/minecraft/mc-mods/somnia-ce) and
+[Modrinth](https://modrinth.com/mod/somnia-ce).
 
 ### Supported Versions
 
-| Release Branch | Version |  Status   |
-|:--------------:|:-------:|:---------:|
-|     1.20.x     | 1.20.4  | ![Active] |
-|     1.20.1     | 1.20.1  |  ![LTS]   |
+| Release Branch | Minecraft Version | Loaders  |  Status   |
+|:--------------:|:-----------------:|:--------:|:---------:|
+|     1.21.1     |      1.21.1       | NeoForge | ![Active] |
 
 ### Credits
 
-Credit goes to MALfunction84 and Kingrunes, authors of the original Somnia mod.
+Credit goes to MALfunction84 and Kingrunes, authors of the original Somnia mod, as well as Su5eD, for the original Somnia Awoken port.
 
 ## Getting started
 
-All information is available on our [wiki](https://github.com/Su5eD/Somnia/wiki).
+All information is available on our [wiki](https://github.com/vfx-dev/Somnia-Awoken-CE/wiki).
 
 ## Highlighted Features
 
