@@ -7,7 +7,7 @@ val minecraft_version: String by project
 val neoforge_version: String by project
 val versionCurios: String by project
 
-version = "0.1.0"
+version = "3.5.0"
 
 base {
     archivesName = "somnia-ce"
