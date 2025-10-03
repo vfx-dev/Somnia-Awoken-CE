@@ -10,7 +10,7 @@ val versionCurios: String by project
 version = "3.5.0"
 
 base {
-    archivesName = "somnia-ce-neo1.21.1"
+    archivesName = "somnia-ce-neoforge-1.21.1"
 }
 
 java {
