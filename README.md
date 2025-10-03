@@ -26,9 +26,10 @@ Downloads are available on [CurseForge](https://www.curseforge.com/minecraft/mc-
 
 ### Supported Versions
 
-| Release Branch | Minecraft Version | Loaders  |  Status   |
-|:--------------:|:-----------------:|:--------:|:---------:|
-|     1.21.1     |      1.21.1       | NeoForge | ![Active] |
+| Release Branch | Minecraft Version |    Loaders     |  Status   |
+|:--------------:|:-----------------:|:--------------:|:---------:|
+|     1.21.1     |      1.21.1       |    NeoForge    | ![Active] |
+|     1.20.1     |      1.20.1       | MinecraftForge | ![Active] |
 
 ### Credits
 
