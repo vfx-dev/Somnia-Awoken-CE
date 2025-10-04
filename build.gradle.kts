@@ -13,7 +13,7 @@ val versionCurios: String by project
 version = "3.5.0"
 
 base {
-    archivesName = "somnia-ce-forge-1.20.1"
+    archivesName = "somnia-ce-forge-1.21.1"
 }
 
 java {
@@ -61,8 +61,8 @@ minecraft {
     }
 }
 
-tasks.jar {
-    finalizedBy("reobfJar")
+tasks.build {
+    dependsOn("jarJar")
 }
 
 tasks.processResources {
