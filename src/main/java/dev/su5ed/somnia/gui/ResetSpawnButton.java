@@ -24,7 +24,7 @@ public class ResetSpawnButton extends AbstractButton {
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) {
             mc.player.getCapability(CapabilityFatigue.INSTANCE)
-                .ifPresent(props -> SomniaNetwork.INSTANCE.sendToServer(new ResetSpawnPacket(this.resetSpawn)));
+                .ifPresent(props -> SomniaNetwork.sendToServer(new ResetSpawnPacket(this.resetSpawn)));
         }
     }
 

@@ -2,9 +2,7 @@ package dev.su5ed.somnia.network.server;
 
 import dev.su5ed.somnia.capability.CapabilityFatigue;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class ResetSpawnPacket {
     private final boolean resetSpawn;
@@ -22,8 +20,8 @@ public class ResetSpawnPacket {
         return new ResetSpawnPacket(resetSpawn);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().getSender().getCapability(CapabilityFatigue.INSTANCE)
+    public void handle(CustomPayloadEvent.Context ctx) {
+        ctx.getSender().getCapability(CapabilityFatigue.INSTANCE)
             .ifPresent(props -> props.setResetSpawn(this.resetSpawn));
     }
 }

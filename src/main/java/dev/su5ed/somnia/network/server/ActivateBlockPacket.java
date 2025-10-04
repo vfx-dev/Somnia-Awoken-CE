@@ -1,17 +1,13 @@
 package dev.su5ed.somnia.network.server;
 
-import com.google.common.base.MoreObjects;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class ActivateBlockPacket {
     private final BlockPos pos;
@@ -45,13 +41,13 @@ public class ActivateBlockPacket {
         return new ActivateBlockPacket(pos, side, hitX, hitY, hitZ);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ServerPlayer player = ctx.get().getSender();
+    public void handle(CustomPayloadEvent.Context ctx) {
+        ServerPlayer player = ctx.getSender();
         if (player != null) {
             BlockState state = player.level().getBlockState(pos);
             BlockHitResult hitResult = new BlockHitResult(new Vec3(this.hitX, this.hitY, this.hitZ), this.side, pos, false);
 
-            state.use(player.level(), player, MoreObjects.firstNonNull(player.swingingArm, InteractionHand.MAIN_HAND), hitResult);
+            state.useWithoutItem(player.level(), player, hitResult);
         }
     }
 }

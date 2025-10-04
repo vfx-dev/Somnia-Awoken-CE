@@ -1,7 +1,9 @@
 modLoader="javafml"
-loaderVersion="[47,)"
+loaderVersion="[52,)"
 license="GNU Lesser General Public License v3.0"
 issueTrackerURL="https://github.com/vfx-dev/Somnia-Awoken-CE/issues"
+showAsResourcePack=false
+clientSideOnly=false
 
 [[mods]]
 modId="somnia"
@@ -15,12 +17,12 @@ description="Simulating the world while you sleep"
 [[dependencies.somnia]]
     modId="forge"
     mandatory=true
-    versionRange="[47,)"
+    versionRange="[52.1,)"
     ordering="NONE"
     side="BOTH"
 [[dependencies.somnia]]
     modId="minecraft"
     mandatory=true
-    versionRange="[1.20.1]"
+    versionRange="[1.21.1]"
     ordering="NONE"
     side="BOTH"

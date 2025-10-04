@@ -7,6 +7,8 @@ import dev.su5ed.somnia.util.FatigueDisplayPosition;
 import dev.su5ed.somnia.util.ScreenPosition;
 import dev.su5ed.somnia.util.SideEffectStage;
 import dev.su5ed.somnia.util.SpeedColor;
+
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.OptionInstance;
 import net.minecraft.client.gui.Gui;
@@ -14,13 +16,13 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.InBedChatScreen;
 import net.minecraft.client.gui.screens.PauseScreen;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraftforge.client.event.ScreenEvent;
-import net.minecraftforge.client.gui.overlay.ForgeGui;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerWakeUpEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -47,7 +49,8 @@ public class ClientSleepHandler {
 
     static {
         //Disable Quark's clock display override
-        CLOCK.getOrCreateTag().putBoolean("quark:clock_calculated", true);
+        // TODO FP
+//        CLOCK.getOrCreateTag().putBoolean("quark:clock_calculated", true);
     }
 
     public void addSpeedValue(double speed) {
@@ -78,7 +81,7 @@ public class ClientSleepHandler {
         this.speedValues.clear();
     }
 
-    public void renderGuiOverlay(ForgeGui gui, GuiGraphics guiGraphics, float partialTick, int screenWidth, int screenHeight) {
+    public void renderGuiOverlay(GuiGraphics guiGraphics, DeltaTracker dr) {
         if (this.mc.screen != null && !(this.mc.screen instanceof PauseScreen) && (this.mc.player == null || !this.mc.player.isSleeping())) return;
 
         this.mc.player.getCapability(CapabilityFatigue.INSTANCE).ifPresent(fatigue -> {
@@ -157,13 +160,14 @@ public class ClientSleepHandler {
     }
 
     private void renderProgressBar(GuiGraphics poseStack, int width, double progress) {
-        doRenderProgressBar(poseStack, width, 1, 0.2F);
-        doRenderProgressBar(poseStack, width, progress, 1.0F);
+        doRenderProgressBar(poseStack, Gui.EXPERIENCE_BAR_PROGRESS_SPRITE, width, 1, 0.2F);
+        doRenderProgressBar(poseStack, Gui.EXPERIENCE_BAR_PROGRESS_SPRITE, width, progress, 1.0F);
     }
 
-    private void doRenderProgressBar(GuiGraphics guiGraphics, int width, double progress, float alpha) {
+    private void doRenderProgressBar(GuiGraphics guiGraphics, ResourceLocation sprite, int width, double progress, float alpha) {
+        TextureAtlasSprite textureAtlasSprite = Minecraft.getInstance().getGuiSprites().getSprite(sprite);
         for (int amount = (int) (progress * width), x = 20; amount > 0; amount -= 180, x += 180) {
-            blit(guiGraphics, Gui.GUI_ICONS_LOCATION, x, 10, 0, 69, Math.min(amount, 180), 5, 1, 1, 1, alpha);
+            blit(guiGraphics, textureAtlasSprite, x, 10, 0, 0, Math.min(amount, 180), 5, 1, 1, 1, alpha);
         }
     }
 
@@ -193,7 +197,9 @@ public class ClientSleepHandler {
         }
     }
 
-    private static void blit(GuiGraphics guiGraphics, ResourceLocation atlasLocation, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight, float red, float green, float blue, float alpha) {
-        guiGraphics.innerBlit(atlasLocation, x, x + uWidth, y, y + vHeight, 0, (uOffset + 0.0F) / 256F, (uOffset + (float) uWidth) / 256F, (vOffset + 0.0F) / 256F, (vOffset + (float) vHeight) / 256F, red, green, blue, alpha);
+    private static void blit(GuiGraphics guiGraphics, TextureAtlasSprite sprite, int x, int y, int uOffset, int vOffset, int uWidth, int vHeight, float red, float green, float blue, float alpha) {
+        float f = sprite.getU1() - sprite.getU0();
+        float maxU = sprite.getU0() + f * (uWidth / 180F);
+        guiGraphics.innerBlit(sprite.atlasLocation(), x, x + uWidth, y, y + vHeight, 0, sprite.getU0(), maxU, sprite.getV0(), sprite.getV1(), red, green, blue, alpha);
     }
 }

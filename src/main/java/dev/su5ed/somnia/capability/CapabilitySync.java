@@ -14,12 +14,6 @@ import net.minecraftforge.fml.common.Mod;
 
 @Mod.EventBusSubscriber(modid = SomniaAwoken.MODID)
 public final class CapabilitySync {
-
-    @SubscribeEvent
-    public static void onEntityCapabilityAttach(AttachCapabilitiesEvent<Entity> event) {
-        event.addCapability(CapabilityFatigue.NAME, new CapabilityFatigueProvider());
-    }
-
     @SubscribeEvent
     public static void onPlayerLogin(PlayerEvent.PlayerLoggedInEvent event) {
         sync((ServerPlayer) event.getEntity());
@@ -33,18 +27,6 @@ public final class CapabilitySync {
     @SubscribeEvent
     public static void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
         sync((ServerPlayer) event.getEntity());
-    }
-
-    @SubscribeEvent
-    public static void onPlayerClone(PlayerEvent.Clone event) {
-        if (!event.getEntity().level().isClientSide && event.isWasDeath()) {
-            event.getOriginal().getCapability(CapabilityFatigue.INSTANCE)
-                .ifPresent(props -> {
-                    CompoundTag old = props.serializeNBT();
-                    event.getEntity().getCapability(CapabilityFatigue.INSTANCE)
-                        .ifPresent(fatigue -> fatigue.deserializeNBT(old));
-                });
-        }
     }
 
     @SubscribeEvent

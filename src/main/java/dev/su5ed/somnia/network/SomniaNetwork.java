@@ -13,14 +13,14 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
+import net.minecraftforge.network.ChannelBuilder;
 import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.minecraftforge.network.SimpleChannel;
 
 public final class SomniaNetwork {
-    private static final String PROTOCOL_VERSION = "1";
-    public static final SimpleChannel INSTANCE = NetworkRegistry.newSimpleChannel(new ResourceLocation(SomniaAwoken.MODID, "main"), () -> PROTOCOL_VERSION, PROTOCOL_VERSION::equals, PROTOCOL_VERSION::equals);
+    private static final int PROTOCOL_VERSION = 1;
+    public static final SimpleChannel INSTANCE = ChannelBuilder.named(ResourceLocation.fromNamespaceAndPath(SomniaAwoken.MODID, "main")).networkProtocolVersion(PROTOCOL_VERSION).simpleChannel();
 
     public static void registerMessages() {
         int id = 0;
@@ -71,11 +71,15 @@ public final class SomniaNetwork {
     }
 
     public static void sendToClient(Object packet, ServerPlayer player) {
-        INSTANCE.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        INSTANCE.send(packet, PacketDistributor.PLAYER.with(player));
     }
 
     public static void sendToDimension(Object packet, ResourceKey<Level> dimension) {
-        INSTANCE.send(PacketDistributor.DIMENSION.with(() -> dimension), packet);
+        INSTANCE.send(packet, PacketDistributor.DIMENSION.with(dimension));
+    }
+
+    public static void sendToServer(Object packet) {
+        INSTANCE.send(packet, PacketDistributor.SERVER.noArg());
     }
 
     private SomniaNetwork() {}

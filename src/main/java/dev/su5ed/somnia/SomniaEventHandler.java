@@ -56,12 +56,12 @@ public final class SomniaEventHandler {
                 else {
                     double adjustedRate = fatigueRate;
 
-                    MobEffectInstance wakefulness = event.player.getEffect(SomniaObjects.AWAKENING_EFFECT.get());
+                    MobEffectInstance wakefulness = event.player.getEffect(SomniaObjects.AWAKENING_EFFECT.getHolder().get());
                     if (wakefulness != null) {
                         adjustedRate -= wakefulness.getAmplifier() == 0 ? adjustedRate / 4 : adjustedRate / 3;
                     }
 
-                    MobEffectInstance insomnia = event.player.getEffect(SomniaObjects.INSOMNIA_EFFECT.get());
+                    MobEffectInstance insomnia = event.player.getEffect(SomniaObjects.INSOMNIA_EFFECT.getHolder().get());
                     if (insomnia != null) {
                         adjustedRate += insomnia.getAmplifier() == 0 ? adjustedRate / 2 : adjustedRate;
                     }

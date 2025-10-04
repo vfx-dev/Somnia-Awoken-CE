@@ -3,10 +3,8 @@ package dev.su5ed.somnia.network.client;
 import dev.su5ed.somnia.network.ClientPacketHandler;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 import net.minecraftforge.fml.DistExecutor;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
 
 public class FatigueUpdatePacket {
     private final double fatigue;
@@ -24,7 +22,7 @@ public class FatigueUpdatePacket {
         return new FatigueUpdatePacket(fatigue);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
+    public void handle(CustomPayloadEvent.Context ctx) {
         DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> ClientPacketHandler.updateFatigue(this.fatigue));
     }
 }

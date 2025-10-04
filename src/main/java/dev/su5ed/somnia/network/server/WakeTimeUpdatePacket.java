@@ -2,9 +2,7 @@ package dev.su5ed.somnia.network.server;
 
 import dev.su5ed.somnia.capability.CapabilityFatigue;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraftforge.network.NetworkEvent;
-
-import java.util.function.Supplier;
+import net.minecraftforge.event.network.CustomPayloadEvent;
 
 public class WakeTimeUpdatePacket {
     private final long wakeTime;
@@ -22,7 +20,7 @@ public class WakeTimeUpdatePacket {
         return new WakeTimeUpdatePacket(wakeTime);
     }
 
-    public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ctx.get().getSender().getCapability(CapabilityFatigue.INSTANCE).ifPresent(props -> props.setWakeTime(this.wakeTime));
+    public void handle(CustomPayloadEvent.Context ctx) {
+        ctx.getSender().getCapability(CapabilityFatigue.INSTANCE).ifPresent(props -> props.setWakeTime(this.wakeTime));
     }
 }

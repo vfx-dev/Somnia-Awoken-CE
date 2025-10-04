@@ -9,7 +9,7 @@ import net.minecraftforge.registries.ForgeRegistries;
 import java.util.Arrays;
 
 public final class DarkUtilsCompat {
-    private static final ResourceLocation SLEEP_CHARM = new ResourceLocation(Compat.DARK_UTILS_MODID, "charm_sleep");
+    private static final ResourceLocation SLEEP_CHARM = ResourceLocation.fromNamespaceAndPath(Compat.DARK_UTILS_MODID, "charm_sleep");
 
     public static boolean hasSleepCharm(Player player) {
         return Compat.curiosLoaded && CuriosCompat.hasCurio(player, SLEEP_CHARM)

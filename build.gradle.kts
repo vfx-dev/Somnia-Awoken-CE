@@ -2,6 +2,7 @@ import net.minecraftforge.gradle.common.util.RunConfig
 
 plugins {
     java
+    idea
     id("net.minecraftforge.gradle") version "[6.0,6.2)"
 }
 
@@ -17,7 +18,7 @@ base {
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(17)
+        languageVersion = JavaLanguageVersion.of(21)
     }
 
     withSourcesJar()
@@ -42,7 +43,8 @@ dependencies {
 }
 
 minecraft {
-    mappings("official", "1.20.1")
+    mappings("official", minecraft_version)
+    reobf = false
     copyIdeResources = true
     accessTransformer(file("src/main/resources/META-INF/accesstransformer.cfg"))
     runs {
@@ -68,4 +70,9 @@ tasks.processResources {
     filesMatching("META-INF/mods.toml") {
         expand("version" to project.version)
     }
+}
+sourceSets.forEach {
+    val dir = layout.buildDirectory.dir("sourcesSets/$it.name")
+    it.output.setResourcesDir(dir)
+    it.java.destinationDirectory = dir
 }
